@@ -1,0 +1,105 @@
+---
+import Layout from '../layouts/Layout.astro';
+import FeaturedPost from '../components/FeaturedPost.astro';
+import BlogCard from '../components/BlogCard.astro';
+import { posts } from '../data/posts';
+
+// Get featured posts
+const featuredPosts = posts.filter(post => post.featured);
+const featuredPost = featuredPosts.length > 0 ? featuredPosts[0] : null;
+
+// Get recent posts (excluding featured post)
+const recentPosts = featuredPost 
+  ? posts.filter(post => post.id !== featuredPost.id).slice(0, 6)
+  : posts.slice(0, 6);
+
+// Get all unique tags
+const allTags = [...new Set(posts.flatMap(post => post.tags))].slice(0, 7);
+---
+
+<Layout 
+  title="Ishant Webworks Blogs | Web Development Insights"
+  description="Expert insights, tutorials, and trends on web development, design, and technology from Ishant Webworks."
+>
+  <section class="bg-gradient-to-b from-white to-slate-50">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div class="text-center max-w-3xl mx-auto animate-slide-up">
+        <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Ishant Webworks Blogs</h1>
+        <p class="text-xl text-slate-600 mb-8">
+          Insights, tutorials and the latest trends in web development
+        </p>
+        <div class="flex justify-center gap-4">
+          <a href="/blog" class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg shadow-sm transition-colors">
+            Browse All Articles
+          </a>
+          <a href="/about" class="px-6 py-3 bg-white hover:bg-slate-100 text-slate-800 font-medium rounded-lg shadow-sm border border-slate-200 transition-colors">
+            About Us
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {featuredPost && (
+      <div class="mb-12">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">Featured Post</h2>
+        <FeaturedPost post={featuredPost} />
+      </div>
+    )}
+    
+    <div>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-slate-900">Recent Articles</h2>
+        <a href="/blog" class="text-primary-600 hover:text-primary-700 font-medium transition-colors">
+          View all
+        </a>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {recentPosts.map((post, index) => (
+          <BlogCard post={post} index={index} />
+        ))}
+      </div>
+    </div>
+    
+    <div class="mt-16">
+      <h2 class="text-2xl font-bold text-slate-900 mb-6">Explore by Topic</h2>
+      <div class="flex flex-wrap gap-3">
+        {allTags.map((tag) => (
+          <a 
+            href={`/blog?tag=${encodeURIComponent(tag)}`}
+            class="px-4 py-2 bg-white border border-slate-200 rounded-full text-slate-700 hover:bg-slate-50 hover:text-primary-600 hover:border-primary-200 transition-colors"
+          >
+            {tag}
+          </a>
+        ))}
+      </div>
+    </div>
+    
+    <div class="mt-24 bg-white border border-slate-100 rounded-xl p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-8 animate-slide-up">
+      <div class="text-center md:text-left">
+        <h2 class="text-2xl font-bold text-slate-900 mb-3">Subscribe to our newsletter</h2>
+        <p class="text-slate-600 mb-0 max-w-lg">
+          Get the latest web development insights and tutorials delivered right to your inbox.
+        </p>
+      </div>
+      <div class="w-full md:w-auto">
+        <form class="flex flex-col sm:flex-row gap-3">
+          <input 
+            type="email" 
+            placeholder="Enter your email" 
+            class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 w-full md:w-64"
+            required
+          />
+          <button 
+            type="submit" 
+            class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Subscribe
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>

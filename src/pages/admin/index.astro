@@ -1,0 +1,257 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Admin | Ishant Webworks Blogs"
+  description="Admin panel for managing blog content."
+>
+  <div class="container mx-auto px-4 sm:px-6 py-12">
+    <div class="max-w-4xl mx-auto">
+      <!-- Login Form -->
+      <div id="loginForm" class="bg-white rounded-lg shadow-md border border-slate-100 p-8 animate-slide-up">
+        <h1 class="text-2xl font-bold text-slate-900 mb-6">Admin Login</h1>
+        <p class="text-slate-600 mb-6">Enter your password to access the admin panel.</p>
+        
+        <form class="space-y-4">
+          <div>
+            <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+            <input 
+              type="password" 
+              id="password" 
+              class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+              required
+            />
+          </div>
+          <div id="loginError" class="text-red-600 text-sm hidden">Incorrect password!</div>
+          <button 
+            type="submit" 
+            class="px-5 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Log In
+          </button>
+        </form>
+      </div>
+      
+      <!-- Admin Panel (hidden by default) -->
+      <div id="adminPanel" class="animate-slide-up" style="display: none;">
+        <div class="flex justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-slate-900">Admin Panel</h1>
+          <button 
+            id="newPostBtn" 
+            class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors flex items-center"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+            </svg>
+            New Post
+          </button>
+        </div>
+        
+        <!-- Posts List -->
+        <div id="postsList" class="bg-white rounded-lg shadow-md border border-slate-100 p-6">
+          <!-- Posts will be dynamically inserted here -->
+          <div class="text-center py-8 text-slate-500">Loading posts...</div>
+        </div>
+        
+        <!-- New Post Form (hidden by default) -->
+        <div id="postForm" class="bg-white rounded-lg shadow-md border border-slate-100 p-6 mt-6" style="display: none;">
+          <h2 class="text-xl font-semibold text-slate-900 mb-6">Create New Post</h2>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="title" class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+              <input 
+                type="text" 
+                id="title" 
+                name="title"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              />
+            </div>
+            
+            <div>
+              <label for="excerpt" class="block text-sm font-medium text-slate-700 mb-1">Excerpt</label>
+              <textarea 
+                id="excerpt" 
+                name="excerpt"
+                rows="2" 
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              ></textarea>
+            </div>
+            
+            <div>
+              <label for="content" class="block text-sm font-medium text-slate-700 mb-1">Content (HTML)</label>
+              <textarea 
+                id="content" 
+                name="content"
+                rows="10" 
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full font-mono text-sm"
+                required
+              ></textarea>
+            </div>
+            
+            <div>
+              <label for="tags" class="block text-sm font-medium text-slate-700 mb-1">Tags (comma separated)</label>
+              <input 
+                type="text" 
+                id="tags" 
+                name="tags"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              />
+            </div>
+            
+            <div>
+              <label for="thumbnail" class="block text-sm font-medium text-slate-700 mb-1">Thumbnail URL</label>
+              <input 
+                type="url" 
+                id="thumbnail" 
+                name="thumbnail"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              />
+            </div>
+            
+            <div class="flex items-center">
+              <input 
+                type="checkbox" 
+                id="featured" 
+                name="featured"
+                class="h-4 w-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
+              />
+              <label for="featured" class="ml-2 text-sm text-slate-700">Featured post</label>
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+              <button 
+                id="cancelPostBtn"
+                type="button" 
+                class="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Save Post
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Edit Post Form (hidden by default) -->
+        <div id="editPostForm" class="bg-white rounded-lg shadow-md border border-slate-100 p-6 mt-6" style="display: none;">
+          <h2 class="text-xl font-semibold text-slate-900 mb-6">Edit Post</h2>
+          
+          <form class="space-y-4">
+            <div>
+              <label for="edit-title" class="block text-sm font-medium text-slate-700 mb-1">Title</label>
+              <input 
+                type="text" 
+                id="edit-title" 
+                name="title"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              />
+            </div>
+            
+            <div>
+              <label for="edit-excerpt" class="block text-sm font-medium text-slate-700 mb-1">Excerpt</label>
+              <textarea 
+                id="edit-excerpt" 
+                name="excerpt"
+                rows="2" 
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              ></textarea>
+            </div>
+            
+            <div>
+              <label for="edit-content" class="block text-sm font-medium text-slate-700 mb-1">Content (HTML)</label>
+              <textarea 
+                id="edit-content" 
+                name="content"
+                rows="10" 
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full font-mono text-sm"
+                required
+              ></textarea>
+            </div>
+            
+            <div>
+              <label for="edit-tags" class="block text-sm font-medium text-slate-700 mb-1">Tags (comma separated)</label>
+              <input 
+                type="text" 
+                id="edit-tags" 
+                name="tags"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              />
+            </div>
+            
+            <div>
+              <label for="edit-thumbnail" class="block text-sm font-medium text-slate-700 mb-1">Thumbnail URL</label>
+              <input 
+                type="url" 
+                id="edit-thumbnail" 
+                name="thumbnail"
+                class="px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 block w-full"
+                required
+              />
+            </div>
+            
+            <div class="flex items-center">
+              <input 
+                type="checkbox" 
+                id="edit-featured" 
+                name="featured"
+                class="h-4 w-4 text-primary-600 border-slate-300 rounded focus:ring-primary-500"
+              />
+              <label for="edit-featured" class="ml-2 text-sm text-slate-700">Featured post</label>
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+              <button 
+                id="cancelEditBtn"
+                type="button" 
+                class="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+              >
+                Update Post
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Delete Confirmation Dialog -->
+      <dialog id="deleteConfirmDialog" class="bg-white rounded-lg shadow-lg p-6 max-w-md mx-auto">
+        <h3 class="text-xl font-semibold text-slate-900 mb-4">Confirm Delete</h3>
+        <p class="text-slate-600 mb-6">Are you sure you want to delete "<span id="deletePostTitle" class="font-medium"></span>"? This action cannot be undone.</p>
+        <div class="flex justify-end space-x-3">
+          <button 
+            id="cancelDeleteBtn"
+            class="px-4 py-2 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button 
+            id="confirmDeleteBtn"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </dialog>
+    </div>
+  </div>
+</Layout>
+
+<script src="/src/js/admin.js"></script>

@@ -1,0 +1,127 @@
+---
+import Layout from './Layout.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+
+const { frontmatter, slug } = Astro.props;
+const { title, date, author, tags, excerpt, thumbnail, content } = frontmatter;
+
+const formattedDate = new Date(date).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const pageUrl = `https://ishant.shop/blog/${slug}`;
+---
+
+<Layout
+  title={`${title} | Ishant Webworks Blogs`}
+  description={excerpt}
+  image={thumbnail}
+  article={frontmatter}
+  canonicalUrl={`/blog/${slug}`}
+>
+  <article class="mx-auto max-w-4xl px-4 sm:px-6 py-10">
+    <div class="animate-slide-up">
+      <div class="mb-8">
+        <div class="flex flex-wrap gap-2 mb-3">
+          {tags.map((tag: string) => (
+            <span class="text-xs px-2 py-1 bg-primary-100 text-primary-700 rounded-full">{tag}</span>
+          ))}
+        </div>
+        <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">{title}</h1>
+        <p class="text-slate-600 md:text-lg mb-4">{excerpt}</p>
+        <div class="flex items-center text-sm text-slate-500">
+          <span>{author}</span>
+          <span class="mx-2">•</span>
+          <time datetime={date}>{formattedDate}</time>
+        </div>
+      </div>
+      
+      <div class="mb-8 rounded-lg overflow-hidden shadow-md">
+        <img src={thumbnail} alt={title} class="w-full h-auto max-h-[500px] object-cover" />
+      </div>
+      
+      <div class="prose prose-slate max-w-none blog-content" set:html={content}></div>
+      
+      <ShareButtons url={pageUrl} title={title} />
+      
+      <div class="mt-12 pt-8 border-t border-slate-200">
+        <h3 class="text-xl font-semibold text-slate-800 mb-4">Continue Reading</h3>
+        <div id="related-posts" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Related posts will be dynamically inserted here -->
+        </div>
+      </div>
+    </div>
+  </article>
+</Layout>
+
+<script>
+  import { posts } from '../data/posts';
+  
+  // Get current post slug from URL
+  const currentPath = window.location.pathname;
+  const slugMatch = currentPath.match(/\/blog\/([^\/]+)/);
+  const currentSlug = slugMatch ? slugMatch[1] : '';
+  
+  // Find current post
+  const currentPost = posts.find(post => post.slug === currentSlug);
+  
+  if (currentPost) {
+    // Find related posts based on shared tags (excluding current post)
+    const relatedPosts = posts
+      .filter(post => post.id !== currentPost.id)
+      .filter(post => post.tags.some(tag => currentPost.tags.includes(tag)))
+      .sort(() => 0.5 - Math.random()) // Shuffle
+      .slice(0, 2); // Take up to 2 posts
+      
+    const relatedPostsContainer = document.getElementById('related-posts');
+    
+    if (relatedPostsContainer) {
+      // If we have related posts
+      if (relatedPosts.length > 0) {
+        relatedPosts.forEach(post => {
+          relatedPostsContainer.innerHTML += `
+            <a href="/blog/${post.slug}" class="group">
+              <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-100 overflow-hidden h-full">
+                <img 
+                  src="${post.thumbnail}" 
+                  alt="${post.title}" 
+                  class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div class="p-4">
+                  <h3 class="font-semibold text-slate-800 mb-2 group-hover:text-primary-600 transition-colors">${post.title}</h3>
+                  <p class="text-sm text-slate-600 line-clamp-2">${post.excerpt}</p>
+                </div>
+              </div>
+            </a>
+          `;
+        });
+      } else {
+        // If no related posts, show random posts
+        const randomPosts = posts
+          .filter(post => post.id !== currentPost.id)
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 2);
+          
+        randomPosts.forEach(post => {
+          relatedPostsContainer.innerHTML += `
+            <a href="/blog/${post.slug}" class="group">
+              <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-slate-100 overflow-hidden h-full">
+                <img 
+                  src="${post.thumbnail}" 
+                  alt="${post.title}" 
+                  class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                <div class="p-4">
+                  <h3 class="font-semibold text-slate-800 mb-2 group-hover:text-primary-600 transition-colors">${post.title}</h3>
+                  <p class="text-sm text-slate-600 line-clamp-2">${post.excerpt}</p>
+                </div>
+              </div>
+            </a>
+          `;
+        });
+      }
+    }
+  }
+</script>

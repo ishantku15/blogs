@@ -1,0 +1,90 @@
+---
+const { title, description, image, article, canonicalUrl } = Astro.props;
+
+const defaultTitle = 'Ishant Webworks Blogs | Web Development Insights';
+const defaultDescription = 'Expert insights, tutorials, and trends on web development, design, and technology from Ishant Webworks.';
+const defaultImage = 'https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg?auto=compress&cs=tinysrgb&w=800';
+const siteUrl = 'https://ishant.shop';
+
+const seoTitle = title || defaultTitle;
+const seoDescription = description || defaultDescription;
+const seoImage = image || defaultImage;
+const canonicalLink = canonicalUrl ? `${siteUrl}${canonicalUrl}` : Astro.url.href;
+---
+
+<!-- Primary Meta Tags -->
+<title>{seoTitle}</title>
+<meta name="title" content={seoTitle} />
+<meta name="description" content={seoDescription} />
+<link rel="canonical" href={canonicalLink} />
+
+<!-- AI Crawler Optimization -->
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={article ? 'article' : 'website'} />
+<meta property="og:url" content={Astro.url.href} />
+<meta property="og:title" content={seoTitle} />
+<meta property="og:description" content={seoDescription} />
+<meta property="og:image" content={seoImage} />
+<meta property="og:site_name" content="Ishant Webworks Blogs" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={Astro.url.href} />
+<meta property="twitter:title" content={seoTitle} />
+<meta property="twitter:description" content={seoDescription} />
+<meta property="twitter:image" content={seoImage} />
+
+<!-- Favicons -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+<!-- Fonts -->
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+{article && (
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    'headline': seoTitle,
+    'image': seoImage,
+    'datePublished': article.date,
+    'dateModified': article.date,
+    'author': {
+      '@type': 'Person',
+      'name': article.author || 'Ishant Sharma'
+    },
+    'publisher': {
+      '@type': 'Organization',
+      'name': 'Ishant Webworks Blogs',
+      'logo': {
+        '@type': 'ImageObject',
+        'url': `${siteUrl}/favicon.svg`
+      }
+    },
+    'description': seoDescription,
+    'mainEntityOfPage': {
+      '@type': 'WebPage',
+      '@id': canonicalLink
+    },
+    'keywords': article.tags ? article.tags.join(', ') : '',
+    'articleBody': article.content ? article.content.replace(/<[^>]*>/g, '') : '',
+    'wordCount': article.content ? article.content.replace(/<[^>]*>/g, '').split(/\s+/).length : 0
+  })} />
+)}
+
+<!-- Website Schema -->
+<script type="application/ld+json" set:html={JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': 'Ishant Webworks Blogs',
+  'url': siteUrl,
+  'description': defaultDescription,
+  'potentialAction': {
+    '@type': 'SearchAction',
+    'target': `${siteUrl}/blog?search={search_term_string}`,
+    'query-input': 'required name=search_term_string'
+  }
+})} />
